@@ -16,6 +16,8 @@ function handleError(err, res) {
     }
 }
 
+let loggedUsers = [];
+
 const port = process.env.PORT;
 const app = express();
 app.use(json());
@@ -27,6 +29,7 @@ app.post("/sign-up", async (req, res) => {
     try {
         validateUser(user);
         await database.registerUser(user);
+        loggedUsers.push(user.username);
         res.sendStatus(201);
     } catch (err) {
         handleError(err, res);
@@ -37,6 +40,10 @@ app.post("/tweets", async (req, res) => {
     const tweet = req.body;
 
     try {
+        if (!loggedUsers.includes(tweet.username)) {
+            return res.sendStatus(401);
+        }
+        
         validateTweet(tweet);
         await database.postTweet(tweet);
         res.sendStatus(201);
