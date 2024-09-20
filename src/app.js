@@ -2,7 +2,7 @@ import express, { json } from "express";
 import cors from "cors";
 
 import * as database from "./database.js";
-import * as schemas from "./schemas.js";
+import { validateUser, validateTweet } from "./validation.js";
 
 const port = process.env.PORT;
 const app = express();
@@ -13,7 +13,7 @@ app.post("/sign-up", async (req, res) => {
     const user = req.body;
 
     try {
-        schemas.validateUser(user);
+        validateUser(user);
         await database.signup(user);
         res.sendStatus(201);
     } catch (err) {
@@ -31,7 +31,7 @@ app.post("/tweets", async (req, res) => {
     const tweet = req.body;
 
     try {
-        schemas.validateTweet(tweet);
+        validateTweet(tweet);
         await database.postTweet(tweet);
         res.sendStatus(201);
     } catch (err) {
@@ -60,7 +60,7 @@ app.put("/tweets/:id", async (req, res) => {
     const tweet = req.body;
 
     try {
-        schemas.validateTweet(tweet);
+        validateTweet(tweet);
         const isSuccessful = await database.editTweet(id, tweet);
 
         if (!isSuccessful) {
