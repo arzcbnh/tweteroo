@@ -16,3 +16,10 @@ const database = client.db();
 const users = database.collection("users");
 const tweets = database.collection("tweets");
 
+export async function signup(user) {
+    const hasExistingUser = (await users.findOne({ username: user.username })) != null;
+
+    if (!hasExistingUser) {
+        users.insertOne(user);
+    }
+}
