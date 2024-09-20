@@ -29,7 +29,7 @@ export async function registerUser(user) {
 }
 
 export async function postTweet(tweet) {
-    tweets.insertOne(tweet);
+    return tweets.insertOne(tweet);
 }
 
 export async function getTweets() {
