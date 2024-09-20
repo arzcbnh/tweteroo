@@ -27,3 +27,13 @@ export async function signup(user) {
 export async function postTweet(tweet) {
     tweets.insertOne(tweet);
 }
+
+export async function getTweets() {
+    const bareTweets = await tweets.find().toArray();
+    const richTweets = bareTweets.map(async (tweet) => {
+        const user = await users.findOne({ username: tweet.username });
+        return {...tweet, avatar: user.avatar};
+    });
+
+    return Promise.all(richTweets);
+}

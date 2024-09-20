@@ -45,6 +45,16 @@ app.post("/tweets", async (req, res) => {
     }
 })
 
+app.get("/tweets", async (req, res) => {
+    try {
+        const tweets = await database.getTweets();
+        res.send(tweets);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+});
+
 app.listen(port, () => {
     console.log(`Listening to port ${port}`);
 })
