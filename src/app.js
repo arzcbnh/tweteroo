@@ -4,6 +4,18 @@ import cors from "cors";
 import * as database from "./database.js";
 import { validateUser, validateTweet } from "./validation.js";
 
+function handleError(err, res) {
+    if (err.name === "ValidationError") {
+        const messages = err.details.map(detail => detail.message);
+        return res.status(422).send(messages);
+    } else if (err.message === "Not found") {
+        res.sendStatus(404);
+    } else {
+        console.error(err);
+        res.sendStatus(500);
+    }
+}
+
 const port = process.env.PORT;
 const app = express();
 app.use(json());
@@ -17,13 +29,7 @@ app.post("/sign-up", async (req, res) => {
         await database.registerUser(user);
         res.sendStatus(201);
     } catch (err) {
-        if (err.name === "ValidationError") {
-            const messages = err.details.map(detail => detail.message);
-            return res.status(422).send(messages);
-        } else {
-            console.error(err);
-            res.sendStatus(500);
-        }
+        handleError(err, res);
     }
 });
 
@@ -35,13 +41,7 @@ app.post("/tweets", async (req, res) => {
         await database.postTweet(tweet);
         res.sendStatus(201);
     } catch (err) {
-        if (err.name === "ValidationError") {
-            const messages = err.details.map(detail => detail.message);
-            return res.status(422).send(messages);
-        } else {
-            console.error(err);
-            res.sendStatus(500);
-        }
+        handleError(err, res);
     }
 })
 
@@ -50,8 +50,7 @@ app.get("/tweets", async (req, res) => {
         const tweets = await database.getTweets();
         res.send(tweets);
     } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
+        handleError(err, res);
     }
 });
 
@@ -64,15 +63,7 @@ app.put("/tweets/:id", async (req, res) => {
         await database.editTweet(id, newTweet);
         res.sendStatus(204);
     } catch (err) {
-        if (err.name === "ValidationError") {
-            const messages = err.details.map(detail => detail.message);
-            return res.status(422).send(messages);
-        } else if (err.message === "Not found") {
-            res.sendStatus(404);
-        } else {
-            console.error(err);
-            res.sendStatus(500);
-        }
+        handleError(err, res);
     }
 })
 
@@ -83,12 +74,7 @@ app.delete("/tweets/:id", async (req, res) => {
         await database.deleteTweet(id);
         res.sendStatus(204);
     } catch (err) {
-        if (err.message === "Not found") {
-            res.sendStatus(404);
-        } else {
-            console.error(err);
-            res.sendStatus(500);
-        }
+        handleError(err, res);
     }
 })
 
