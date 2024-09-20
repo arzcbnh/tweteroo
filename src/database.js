@@ -32,7 +32,7 @@ export async function getTweets() {
     const bareTweets = await tweets.find().toArray();
     const richTweets = bareTweets.map(async (tweet) => {
         const user = await users.findOne({ username: tweet.username });
-        return {...tweet, avatar: user.avatar};
+        return { ...tweet, avatar: user.avatar };
     });
 
     return Promise.all(richTweets);
@@ -41,7 +41,7 @@ export async function getTweets() {
 export async function editTweet(id, tweet) {
     const isSuccessful = true;
     const foundTweet = await tweets.findOne({ _id: new ObjectId(id) });
-    
+
     if (foundTweet == null) {
         return !isSuccessful;
     }
@@ -51,6 +51,19 @@ export async function editTweet(id, tweet) {
     }, {
         $set: tweet
     })
+
+    return isSuccessful;
+}
+
+export async function deleteTweet(id) {
+    const isSuccessful = true;
+    const foundTweet = await tweets.findOne({ _id: new ObjectId(id) });
+
+    if (foundTweet == null) {
+        return !isSuccessful;
+    }
+
+    tweets.deleteOne({ _id: new ObjectId(id) })
 
     return isSuccessful;
 }

@@ -79,6 +79,18 @@ app.put("/tweets/:id", async (req, res) => {
     }
 })
 
+app.delete("/tweets/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await database.deleteTweet(id);
+        res.sendStatus(204);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+})
+
 app.listen(port, () => {
     console.log(`Listening to port ${port}`);
 })
