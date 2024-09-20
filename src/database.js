@@ -52,7 +52,9 @@ export async function editTweet(id, newTweet) {
     return tweets.updateOne({
         _id: oldTweet._id
     }, {
-        $set: newTweet
+        $set: {
+            tweet: newTweet.tweet
+        }
     });
 }
 
