@@ -11,37 +11,37 @@ app.use(cors());
 
 app.post("/sign-up", async (req, res) => {
     const user = req.body;
-    const validation = schemas.user.validate(user);
-
-    if (validation.error) {
-        const messages = validation.error.details.map(detail => detail.message);
-        return res.status(422).send(messages);
-    }
 
     try {
+        schemas.validateUser(user);
         await database.signup(user);
         res.sendStatus(201);
     } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
+        if (err.name === "ValidationError") {
+            const messages = err.details.map(detail => detail.message);
+            return res.status(422).send(messages);
+        } else {
+            console.error(err);
+            res.sendStatus(500);
+        }
     }
 });
 
 app.post("/tweets", async (req, res) => {
     const tweet = req.body;
-    const validation = schemas.tweet.validate(tweet);
-
-    if (validation.error) {
-        const messages = validation.error.details.map(detail => detail.message);
-        return res.status(422).send(messages);
-    }
 
     try {
+        schemas.validateTweet(tweet);
         await database.postTweet(tweet);
         res.sendStatus(201);
     } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
+        if (err.name === "ValidationError") {
+            const messages = err.details.map(detail => detail.message);
+            return res.status(422).send(messages);
+        } else {
+            console.error(err);
+            res.sendStatus(500);
+        }
     }
 })
 
@@ -58,14 +58,9 @@ app.get("/tweets", async (req, res) => {
 app.put("/tweets/:id", async (req, res) => {
     const { id } = req.params;
     const tweet = req.body;
-    const validation = schemas.tweet.validate(tweet);
-
-    if (validation.error) {
-        const messages = validation.error.details.map(detail => detail.message);
-        return res.status(422).send(messages);
-    }
 
     try {
+        schemas.validateTweet(tweet);
         const isSuccessful = await database.editTweet(id, tweet);
 
         if (!isSuccessful) {
@@ -74,8 +69,13 @@ app.put("/tweets/:id", async (req, res) => {
 
         res.sendStatus(204);
     } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
+        if (err.name === "ValidationError") {
+            const messages = err.details.map(detail => detail.message);
+            return res.status(422).send(messages);
+        } else {
+            console.error(err);
+            res.sendStatus(500);
+        }
     }
 })
 
