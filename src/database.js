@@ -37,3 +37,20 @@ export async function getTweets() {
 
     return Promise.all(richTweets);
 }
+
+export async function editTweet(id, tweet) {
+    const isSuccessful = true;
+    const foundTweet = await tweets.findOne({ _id: new ObjectId(id) });
+    
+    if (foundTweet == null) {
+        return !isSuccessful;
+    }
+
+    tweets.updateOne({
+        _id: new ObjectId(id)
+    }, {
+        $set: tweet
+    })
+
+    return isSuccessful;
+}
