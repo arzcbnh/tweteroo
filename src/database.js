@@ -33,7 +33,7 @@ export async function postTweet(tweet) {
 }
 
 export async function getTweets() {
-    const bareTweets = await tweets.find().toArray();
+    const bareTweets = (await tweets.find().toArray()).reverse();
     const richTweets = bareTweets.map(async (tweet) => {
         const user = await users.findOne({ username: tweet.username });
         return { ...tweet, avatar: user.avatar };
