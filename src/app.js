@@ -27,6 +27,24 @@ app.post("/sign-up", async (req, res) => {
     }
 });
 
+app.post("/tweets", async (req, res) => {
+    const tweet = req.body;
+    const validation = schemas.tweet.validate(tweet);
+
+    if (validation.error) {
+        const messages = validation.error.details.map(detail => detail.message);
+        return res.status(422).send(messages);
+    }
+
+    try {
+        await database.postTweet(tweet);
+        res.sendStatus(201);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+})
+
 app.listen(port, () => {
     console.log(`Listening to port ${port}`);
 })

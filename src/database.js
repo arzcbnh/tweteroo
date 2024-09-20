@@ -23,3 +23,7 @@ export async function signup(user) {
         users.insertOne(user);
     }
 }
+
+export async function postTweet(tweet) {
+    tweets.insertOne(tweet);
+}
