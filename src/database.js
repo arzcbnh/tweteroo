@@ -44,32 +44,26 @@ export async function getTweets() {
     return Promise.all(richTweets);
 }
 
-export async function editTweet(id, tweet) {
-    const isSuccessful = true;
-    const foundTweet = await tweets.findOne({ _id: new ObjectId(id) });
+export async function editTweet(id, newTweet) {
+    const oldTweet = await tweets.findOne({ _id: new ObjectId(id) });
 
-    if (foundTweet == null) {
-        return !isSuccessful;
+    if (oldTweet == null) {
+        throw new Error("Not found");
     }
 
-    tweets.updateOne({
-        _id: new ObjectId(id)
+    return tweets.updateOne({
+        _id: oldTweet._id
     }, {
-        $set: tweet
-    })
-
-    return isSuccessful;
+        $set: newTweet
+    });
 }
 
 export async function deleteTweet(id) {
-    const isSuccessful = true;
-    const foundTweet = await tweets.findOne({ _id: new ObjectId(id) });
+    const tweet = await tweets.findOne({ _id: new ObjectId(id) });
 
-    if (foundTweet == null) {
-        return !isSuccessful;
+    if (tweet == null) {
+        throw new Error("Not found");
     }
 
-    tweets.deleteOne({ _id: new ObjectId(id) })
-
-    return isSuccessful;
+    return tweets.deleteOne({ _id: tweet._id });
 }

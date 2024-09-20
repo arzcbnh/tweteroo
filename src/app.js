@@ -57,21 +57,18 @@ app.get("/tweets", async (req, res) => {
 
 app.put("/tweets/:id", async (req, res) => {
     const { id } = req.params;
-    const tweet = req.body;
+    const newTweet = req.body;
 
     try {
-        validateTweet(tweet);
-        const isSuccessful = await database.editTweet(id, tweet);
-
-        if (!isSuccessful) {
-            return res.sendStatus(404);
-        }
-
+        validateTweet(newTweet);
+        await database.editTweet(id, newTweet);
         res.sendStatus(204);
     } catch (err) {
         if (err.name === "ValidationError") {
             const messages = err.details.map(detail => detail.message);
             return res.status(422).send(messages);
+        } else if (err.message === "Not found") {
+            res.sendStatus(404);
         } else {
             console.error(err);
             res.sendStatus(500);
@@ -86,8 +83,12 @@ app.delete("/tweets/:id", async (req, res) => {
         await database.deleteTweet(id);
         res.sendStatus(204);
     } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
+        if (err.message === "Not found") {
+            res.sendStatus(404);
+        } else {
+            console.error(err);
+            res.sendStatus(500);
+        }
     }
 })
 
