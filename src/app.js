@@ -14,7 +14,7 @@ app.post("/sign-up", async (req, res) => {
 
     try {
         validateUser(user);
-        await database.signup(user);
+        await database.registerUser(user);
         res.sendStatus(201);
     } catch (err) {
         if (err.name === "ValidationError") {

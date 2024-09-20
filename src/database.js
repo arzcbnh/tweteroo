@@ -16,11 +16,17 @@ const database = client.db();
 const users = database.collection("users");
 const tweets = database.collection("tweets");
 
-export async function signup(user) {
-    const hasExistingUser = (await users.findOne({ username: user.username })) != null;
+export async function registerUser(user) {
+    const existingUser = await users.findOne({ username: user.username });
 
-    if (!hasExistingUser) {
-        users.insertOne(user);
+    if (existingUser == null) {
+        return users.insertOne(user);
+    } else {
+        return users.updateOne({
+            _id: existingUser._id
+        }, {
+            $set: user
+        });
     }
 }
 
